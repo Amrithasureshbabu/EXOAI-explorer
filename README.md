@@ -29,8 +29,30 @@ ExoAI Explorer is a futuristic, space-themed web app that empowers users to disc
 
 ## 📦 Installation
 
-```bash
-git clone https://github.com/yourusername/exoai-explorer.git
-cd exoai-explorer
-pip install -r requirements.txt
-npm install  # if frontend uses Node.js
+
+
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Python](https://img.shields.io/badge/python-3.9+-yellow.svg)
+![Frontend](https://img.shields.io/badge/frontend-HTML%2FCSS%2FJS-green.svg)
+![AI Model](https://img.shields.io/badge/AI-TensorFlow%2FPyTorch-purple.svg)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
