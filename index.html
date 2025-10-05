@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExoAI Explorer 🌌</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <script src="auth.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'space-blue': '#0a0e27',
+                        'neon-cyan': '#00d4ff',
+                        'neon-blue': '#0099cc',
+                        'glass-white': 'rgba(255, 255, 255, 0.1)',
+                        'glass-border': 'rgba(0, 212, 255, 0.3)'
+                    },
+                    backdropBlur: {
+                        'xs': '2px',
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.6s ease-out',
+                        'slide-in-left': 'slideInLeft 0.5s ease-out',
+                        'glow-pulse': 'glowPulse 2s ease-in-out infinite',
+                        'progress-fill': 'progressFill 1.5s ease-out'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-space-blue text-white overflow-x-hidden">
+    <!-- Enhanced Space Background -->
+    <div id="space-background" class="fixed inset-0 z-0">
+        <div class="stars"></div>
+        <div class="stars stars2"></div>
+        <div class="stars stars3"></div>
+        <!-- Dark gradient overlay for better readability -->
+        <div class="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-space-blue/40"></div>
+    </div>
+
+    <!-- Glassmorphism Header -->
+    <header id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+        <div class="backdrop-blur-md bg-glass-white/20 border-b border-glass-border/30">
+            <div class="container mx-auto px-6 py-4">
+                <div class="flex justify-between items-center">
+                    <h1 class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-neon-cyan via-white to-neon-blue bg-clip-text text-transparent animate-glow-pulse">
+                        ExoAI Explorer 🌌
+                    </h1>
+                    <nav class="hidden md:flex space-x-8">
+                        <a href="#star-map-section" class="nav-link relative px-4 py-2 rounded-lg transition-all duration-300 hover:bg-glass-white/20 hover:text-neon-cyan">
+                            Star Map
+                        </a>
+                        <a href="#brightness-curves-section" class="nav-link relative px-4 py-2 rounded-lg transition-all duration-300 hover:bg-glass-white/20 hover:text-neon-cyan">
+                            Brightness Curves
+                        </a>
+                        <a href="#nasa-data-section" class="nav-link relative px-4 py-2 rounded-lg transition-all duration-300 hover:bg-glass-white/20 hover:text-neon-cyan">
+                            NASA Data
+                        </a>
+                        <a href="#planet-profiles-section" class="nav-link relative px-4 py-2 rounded-lg transition-all duration-300 hover:bg-glass-white/20 hover:text-neon-cyan">
+                            Planet Profiles
+                        </a>
+                        <a href="#gamification-section" class="nav-link relative px-4 py-2 rounded-lg transition-all duration-300 hover:bg-glass-white/20 hover:text-neon-cyan">
+                            Achievements
+                        </a>
+                    </nav>
+                    <!-- User Menu -->
+                    <div class="flex items-center space-x-4">
+                        <div id="userMenu" class="hidden">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-8 h-8 bg-gradient-to-r from-neon-cyan to-neon-blue rounded-full flex items-center justify-center">
+                                    <span class="text-sm font-bold" id="userInitial">U</span>
+                                </div>
+                                <span class="text-sm" id="userName">User</span>
+                                <button onclick="logout()" class="text-xs text-gray-400 hover:text-white">Logout</button>
+                            </div>
+                        </div>
+                        <button id="loginBtn" class="glass-button px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-300 hover:scale-105">
+                            Login
+                        </button>
+                        <!-- Mobile menu button -->
+                        <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg bg-glass-white/20 border border-glass-border/30">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <!-- Mobile menu -->
+                <div id="mobile-menu" class="md:hidden mt-4 space-y-2 hidden">
+                    <a href="#star-map-section" class="nav-link block px-4 py-2 rounded-lg transition-all duration-300 hover:bg-glass-white/20 hover:text-neon-cyan">
+                        Star Map
+                    </a>
+                    <a href="#brightness-curves-section" class="nav-link block px-4 py-2 rounded-lg transition-all duration-300 hover:bg-glass-white/20 hover:text-neon-cyan">
+                        Brightness Curves
+                    </a>
+                    <a href="#nasa-data-section" class="nav-link block px-4 py-2 rounded-lg transition-all duration-300 hover:bg-glass-white/20 hover:text-neon-cyan">
+                        NASA Data
+                    </a>
+                    <a href="#planet-profiles-section" class="nav-link block px-4 py-2 rounded-lg transition-all duration-300 hover:bg-glass-white/20 hover:text-neon-cyan">
+                        Planet Profiles
+                    </a>
+                    <a href="#gamification-section" class="nav-link block px-4 py-2 rounded-lg transition-all duration-300 hover:bg-glass-white/20 hover:text-neon-cyan">
+                        Achievements
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="relative z-10 pt-20">
+        <!-- Star Map Section -->
+        <section id="star-map-section" class="section py-16 px-6">
+            <div class="container mx-auto max-w-6xl">
+                <div class="glass-card p-8 md:p-12">
+                    <h2 class="section-title text-3xl md:text-4xl font-bold text-center mb-8 bg-gradient-to-r from-neon-cyan to-neon-blue bg-clip-text text-transparent">
+                        Explore Stars
+                    </h2>
+                    <div class="star-map-container bg-glass-white/10 rounded-2xl p-6 border border-glass-border/30">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold text-neon-cyan">Interactive Star Map</h3>
+                            <button id="toggle3DTourBtn" class="glass-button px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-300 hover:scale-105">
+                                <span class="flex items-center space-x-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                    </svg>
+                                    <span>3D Space Tour</span>
+                                </span>
+                            </button>
+                        </div>
+                        <div id="starfield3d" class="w-full h-96 rounded-xl relative"></div>
+                        
+                        <!-- 3D Tour Mode Overlay -->
+                        <div id="spaceTour3D" class="hidden fixed inset-0 z-50 bg-black">
+                            <div class="relative w-full h-full">
+                                <!-- 3D Canvas Container -->
+                                <div id="spaceTour3DCanvas" class="w-full h-full"></div>
+                                
+                                <!-- 3D Tour Controls -->
+                                <div class="absolute top-4 left-4 z-10">
+                                    <div class="glass-card p-4">
+                                        <h3 class="text-lg font-bold text-neon-cyan mb-3">3D Space Tour</h3>
+                                        <div class="space-y-2 text-sm">
+                                            <div class="flex items-center space-x-2">
+                                                <span class="text-gray-400">Mouse:</span>
+                                                <span class="text-white">Rotate & Pan</span>
+                                            </div>
+                                            <div class="flex items-center space-x-2">
+                                                <span class="text-gray-400">Scroll:</span>
+                                                <span class="text-white">Zoom</span>
+                                            </div>
+                                            <div class="flex items-center space-x-2">
+                                                <span class="text-gray-400">Click:</span>
+                                                <span class="text-white">Select Star</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Exit Button -->
+                                <button id="exit3DTourBtn" class="absolute top-4 right-4 z-10 glass-button px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-300 hover:scale-105">
+                                    <span class="flex items-center space-x-2">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                        <span>Exit 3D Tour</span>
+                                    </span>
+                                </button>
+                                
+                                <!-- Star/Planet Info Panel -->
+                                <div id="spaceTourInfoPanel" class="hidden absolute bottom-4 left-4 z-10">
+                                    <div class="glass-card p-6 max-w-sm">
+                                        <div class="flex justify-between items-start mb-4">
+                                            <h4 id="spaceTourObjectName" class="text-xl font-bold text-neon-cyan"></h4>
+                                            <button id="closeSpaceTourInfo" class="text-gray-400 hover:text-white">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <div id="spaceTourObjectDetails" class="space-y-3">
+                                            <!-- Dynamic content will be inserted here -->
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Performance Stats -->
+                                <div class="absolute bottom-4 right-4 z-10">
+                                    <div class="glass-card p-3">
+                                        <div class="text-xs text-gray-400">
+                                            <div>FPS: <span id="fpsCounter" class="text-neon-cyan">60</span></div>
+                                            <div>Objects: <span id="objectCounter" class="text-neon-cyan">0</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Brightness Curves Section -->
+        <section id="brightness-curves-section" class="section py-16 px-6">
+            <div class="container mx-auto max-w-6xl">
+                <div class="glass-card p-8 md:p-12">
+                    <h2 class="section-title text-3xl md:text-4xl font-bold text-center mb-8 bg-gradient-to-r from-neon-cyan to-neon-blue bg-clip-text text-transparent">
+                        Brightness Curves
+                    </h2>
+                    <div class="chart-container bg-glass-white/10 rounded-2xl p-6 border border-glass-border/30 mb-8">
+                        <canvas id="brightnessChart" class="w-full h-auto"></canvas>
+                    </div>
+                    <div class="text-center">
+                        <button id="analyzeBtn" class="glass-button px-8 py-4 text-lg font-semibold rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+                            <span class="flex items-center justify-center space-x-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                                </svg>
+                                <span>Analyze with AI</span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- NASA Data Section -->
+        <section id="nasa-data-section" class="section py-16 px-6">
+            <div class="container mx-auto max-w-7xl">
+                <div class="glass-card p-8 md:p-12">
+                    <h2 class="section-title text-3xl md:text-4xl font-bold text-center mb-8 bg-gradient-to-r from-neon-cyan to-neon-blue bg-clip-text text-transparent">
+                        NASA Exoplanet Data
+                    </h2>
+                    <div class="flex flex-col md:flex-row gap-4 justify-center mb-8">
+                        <button id="loadNasaDataBtn" class="glass-button px-6 py-3 font-semibold rounded-xl transition-all duration-300 hover:scale-105">
+                            <span class="flex items-center justify-center space-x-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                                </svg>
+                                <span>Load NASA Data</span>
+                            </span>
+                        </button>
+                        <button id="analyzeAllBtn" class="glass-button px-6 py-3 font-semibold rounded-xl transition-all duration-300 hover:scale-105">
+                            <span class="flex items-center justify-center space-x-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                                </svg>
+                                <span>Analyze with AI</span>
+                            </span>
+                        </button>
+                    </div>
+                    <div class="table-container bg-glass-white/10 rounded-2xl border border-glass-border/30 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table id="nasaDataTable" class="w-full">
+                                <thead class="bg-gradient-to-r from-neon-cyan/20 to-neon-blue/20">
+                                    <tr>
+                                        <th class="px-6 py-4 text-left text-sm font-bold text-neon-cyan uppercase tracking-wider">Planet Name</th>
+                                        <th class="px-6 py-4 text-left text-sm font-bold text-neon-cyan uppercase tracking-wider">Host Star</th>
+                                        <th class="px-6 py-4 text-left text-sm font-bold text-neon-cyan uppercase tracking-wider">Orbital Period (days)</th>
+                                        <th class="px-6 py-4 text-left text-sm font-bold text-neon-cyan uppercase tracking-wider">Planet Radius (Earth radii)</th>
+                                        <th class="px-6 py-4 text-left text-sm font-bold text-neon-cyan uppercase tracking-wider">Transit Duration (hours)</th>
+                                        <th class="px-6 py-4 text-left text-sm font-bold text-neon-cyan uppercase tracking-wider">Status</th>
+                                        <th class="px-6 py-4 text-left text-sm font-bold text-neon-cyan uppercase tracking-wider">AI Prediction</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="nasaDataBody" class="divide-y divide-glass-border/20">
+                                    <!-- Data will be populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Planet Profiles Section -->
+        <section id="planet-profiles-section" class="section py-16 px-6">
+            <div class="container mx-auto max-w-7xl">
+                <div class="glass-card p-8 md:p-12">
+                    <h2 class="section-title text-3xl md:text-4xl font-bold text-center mb-8 bg-gradient-to-r from-neon-cyan to-neon-blue bg-clip-text text-transparent">
+                        Planet Profiles
+                    </h2>
+                    <div id="planetCards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Planet cards will be generated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Gamification Section -->
+        <section id="gamification-section" class="section py-16 px-6">
+            <div class="container mx-auto max-w-7xl">
+                <div class="glass-card p-8 md:p-12">
+                    <h2 class="section-title text-3xl md:text-4xl font-bold text-center mb-8 bg-gradient-to-r from-neon-cyan to-neon-blue bg-clip-text text-transparent">
+                        Achievements & Space Explorer
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <!-- Achievements Panel -->
+                        <div class="glass-card p-6">
+                            <h3 class="text-xl font-bold text-neon-cyan mb-4 flex items-center">
+                                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+                                </svg>
+                                Achievements
+                            </h3>
+                            <div id="achievementsList" class="space-y-3 max-h-96 overflow-y-auto">
+                                <!-- Achievements will be populated dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Leaderboard -->
+                        <div class="glass-card p-6">
+                            <h3 class="text-xl font-bold text-neon-cyan mb-4 flex items-center">
+                                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                </svg>
+                                Leaderboard
+                            </h3>
+                            <div id="leaderboardList" class="space-y-3">
+                                <!-- Leaderboard will be populated dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Progress Tracking -->
+                        <div class="glass-card p-6">
+                            <h3 class="text-xl font-bold text-neon-cyan mb-4 flex items-center">
+                                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                                Progress
+                            </h3>
+                            <div class="space-y-4">
+                                <div class="progress-item">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-sm font-semibold text-gray-300">AI Analyses</span>
+                                        <span id="analysisProgress" class="text-sm font-bold text-neon-cyan">0/10</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div id="analysisProgressFill" class="progress-fill" style="--progress: 0%"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="progress-item">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-sm font-semibold text-gray-300">Planets Discovered</span>
+                                        <span id="discoveryProgress" class="text-sm font-bold text-neon-cyan">0/25</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div id="discoveryProgressFill" class="progress-fill" style="--progress: 0%"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="progress-item">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-sm font-semibold text-gray-300">Stars Explored</span>
+                                        <span id="starProgress" class="text-sm font-bold text-neon-cyan">0/50</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div id="starProgressFill" class="progress-fill" style="--progress: 0%"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="progress-item">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-sm font-semibold text-gray-300">Data Uploads</span>
+                                        <span id="uploadProgress" class="text-sm font-bold text-neon-cyan">0/5</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div id="uploadProgressFill" class="progress-fill" style="--progress: 0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Space Tour Mode -->
+                    <div class="mt-8">
+                        <div class="glass-card p-6">
+                            <h3 class="text-xl font-bold text-neon-cyan mb-4 flex items-center">
+                                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                </svg>
+                                Space Tour Mode
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="text-center">
+                                    <div class="w-24 h-24 mx-auto mb-4 bg-gradient-to-r from-neon-cyan to-neon-blue rounded-full flex items-center justify-center">
+                                        <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                        </svg>
+                                    </div>
+                                    <h4 class="text-lg font-semibold text-white mb-2">Explore the Cosmos</h4>
+                                    <p class="text-gray-400 text-sm mb-4">Take a guided tour through the universe and discover amazing exoplanets!</p>
+                                    <button id="startTourBtn" class="glass-button px-6 py-3 font-semibold rounded-lg transition-all duration-300 hover:scale-105">
+                                        Start Space Tour
+                                    </button>
+                                </div>
+                                
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between p-3 bg-glass-white/5 rounded-lg">
+                                        <div class="flex items-center">
+                                            <div class="w-8 h-8 bg-neon-cyan/20 rounded-full flex items-center justify-center mr-3">
+                                                <span class="text-neon-cyan font-bold text-sm">1</span>
+                                            </div>
+                                            <span class="text-white font-medium">Tour Complete</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <span class="text-neon-cyan font-bold">+100 XP</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between p-3 bg-glass-white/5 rounded-lg">
+                                        <div class="flex items-center">
+                                            <div class="w-8 h-8 bg-neon-blue/20 rounded-full flex items-center justify-center mr-3">
+                                                <span class="text-neon-blue font-bold text-sm">2</span>
+                                            </div>
+                                            <span class="text-white font-medium">AI Discovery</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <span class="text-neon-blue font-bold">+50 XP</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between p-3 bg-glass-white/5 rounded-lg">
+                                        <div class="flex items-center">
+                                            <div class="w-8 h-8 bg-gray-600/20 rounded-full flex items-center justify-center mr-3">
+                                                <span class="text-gray-400 font-bold text-sm">3</span>
+                                            </div>
+                                            <span class="text-gray-400 font-medium">Data Analysis</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <span class="text-gray-400 font-bold">+25 XP</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Glassmorphism Footer -->
+    <footer class="relative z-10 mt-16">
+        <div class="backdrop-blur-md bg-glass-white/10 border-t border-glass-border/30">
+            <div class="container mx-auto px-6 py-8">
+                <div class="text-center">
+                    <p class="text-gray-300">
+                        Compare with 
+                        <a href="https://exoplanetarchive.ipac.caltech.edu/" target="_blank" rel="noopener noreferrer" 
+                           class="text-neon-cyan hover:text-white transition-colors duration-300 font-semibold">
+                            NASA Exoplanet Archive
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" onclick="closeLoginModal()"></div>
+        <div class="relative glass-card p-8 max-w-md w-full mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-neon-cyan">Login to ExoAI Explorer</h3>
+                <button onclick="closeLoginModal()" class="text-gray-400 hover:text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-neon-cyan mb-2">Username or Email</label>
+                    <input type="text" id="loginUsername" class="w-full p-3 bg-glass-white/10 border border-glass-border/30 rounded-lg text-white focus:border-neon-cyan focus:outline-none" placeholder="Enter username or email" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-neon-cyan mb-2">Password</label>
+                    <input type="password" id="loginPassword" class="w-full p-3 bg-glass-white/10 border border-glass-border/30 rounded-lg text-white focus:border-neon-cyan focus:outline-none" placeholder="Enter password" required>
+                </div>
+                <div class="flex items-center justify-between">
+                    <label class="flex items-center">
+                        <input type="checkbox" id="rememberLogin" class="mr-2">
+                        <span class="text-sm text-gray-300">Remember me</span>
+                    </label>
+                    <a href="#" class="text-sm text-neon-cyan hover:text-white">Forgot password?</a>
+                </div>
+                <button type="submit" class="glass-button w-full py-3 font-semibold rounded-lg transition-all duration-300 hover:scale-105">
+                    Login
+                </button>
+            </form>
+            <div class="mt-4 text-center">
+                <p class="text-sm text-gray-400">Don't have an account? <a href="#" onclick="showSignupModal()" class="text-neon-cyan hover:text-white">Sign up</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div id="signupModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" onclick="closeSignupModal()"></div>
+        <div class="relative glass-card p-8 max-w-md w-full mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-neon-cyan">Join ExoAI Explorer</h3>
+                <button onclick="closeSignupModal()" class="text-gray-400 hover:text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <form id="signupForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-neon-cyan mb-2">Username</label>
+                    <input type="text" id="signupUsername" class="w-full p-3 bg-glass-white/10 border border-glass-border/30 rounded-lg text-white focus:border-neon-cyan focus:outline-none" placeholder="Choose a username" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-neon-cyan mb-2">Email</label>
+                    <input type="email" id="signupEmail" class="w-full p-3 bg-glass-white/10 border border-glass-border/30 rounded-lg text-white focus:border-neon-cyan focus:outline-none" placeholder="Enter your email" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-neon-cyan mb-2">Password</label>
+                    <input type="password" id="signupPassword" class="w-full p-3 bg-glass-white/10 border border-glass-border/30 rounded-lg text-white focus:border-neon-cyan focus:outline-none" placeholder="Create a password" required>
+                    <p class="text-xs text-gray-400 mt-1">Must contain uppercase, lowercase, and number</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-neon-cyan mb-2">Confirm Password</label>
+                    <input type="password" id="signupConfirmPassword" class="w-full p-3 bg-glass-white/10 border border-glass-border/30 rounded-lg text-white focus:border-neon-cyan focus:outline-none" placeholder="Confirm your password" required>
+                </div>
+                <button type="submit" class="glass-button w-full py-3 font-semibold rounded-lg transition-all duration-300 hover:scale-105">
+                    Create Account
+                </button>
+            </form>
+            <div class="mt-4 text-center">
+                <p class="text-sm text-gray-400">Already have an account? <a href="#" onclick="showLoginModal()" class="text-neon-cyan hover:text-white">Login</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

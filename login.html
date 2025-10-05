@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - ExoAI Explorer 🌌</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="login.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'space-blue': '#0a0e27',
+                        'neon-cyan': '#00d4ff',
+                        'neon-blue': '#0099cc',
+                        'glass-white': 'rgba(255, 255, 255, 0.1)',
+                        'glass-border': 'rgba(0, 212, 255, 0.3)'
+                    },
+                    fontFamily: {
+                        'orbitron': ['Orbitron', 'monospace'],
+                        'inter': ['Inter', 'sans-serif']
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.8s ease-out',
+                        'slide-in-left': 'slideInLeft 0.6s ease-out',
+                        'glow-pulse': 'glowPulse 2s ease-in-out infinite',
+                        'float': 'float 6s ease-in-out infinite'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-space-blue text-white overflow-hidden font-inter">
+    <!-- Enhanced Space Background -->
+    <div id="space-background" class="fixed inset-0 z-0">
+        <div class="stars"></div>
+        <div class="stars stars2"></div>
+        <div class="stars stars3"></div>
+        <!-- Nebula effect -->
+        <div class="nebula nebula-1"></div>
+        <div class="nebula nebula-2"></div>
+        <!-- Dark gradient overlay -->
+        <div class="absolute inset-0 bg-gradient-to-br from-black/30 via-transparent to-space-blue/50"></div>
+    </div>
+
+    <!-- Floating Particles -->
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <!-- Main Login Container -->
+    <div class="min-h-screen flex items-center justify-center p-4 relative z-10">
+        <div class="login-container animate-fade-in-up">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <h1 class="text-4xl md:text-5xl font-orbitron font-bold bg-gradient-to-r from-neon-cyan via-white to-neon-blue bg-clip-text text-transparent animate-glow-pulse mb-2">
+                    ExoAI Explorer 🌌
+                </h1>
+                <p class="text-gray-300 text-lg font-light">Access the Universe</p>
+            </div>
+
+            <!-- Login Card -->
+            <div class="login-card">
+                <div class="login-header">
+                    <h2 class="text-2xl font-orbitron font-bold text-center text-neon-cyan mb-2">Welcome Back</h2>
+                    <p class="text-gray-400 text-center text-sm">Sign in to continue your cosmic journey</p>
+                </div>
+
+                <form id="loginForm" class="login-form">
+                    <!-- Email/Username Field -->
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email / Username</label>
+                        <div class="input-container">
+                            <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
+                            </svg>
+                            <input 
+                                type="text" 
+                                id="email" 
+                                name="email" 
+                                class="form-input" 
+                                placeholder="Enter your email or username"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="form-group">
+                        <label for="password" class="form-label">Password</label>
+                        <div class="input-container">
+                            <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                            </svg>
+                            <input 
+                                type="password" 
+                                id="password" 
+                                name="password" 
+                                class="form-input" 
+                                placeholder="Enter your password"
+                                required
+                            >
+                            <button type="button" class="password-toggle" onclick="togglePassword()">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Remember Me & Forgot Password -->
+                    <div class="form-options">
+                        <label class="remember-me">
+                            <input type="checkbox" id="rememberMe" name="rememberMe">
+                            <span class="checkmark"></span>
+                            <span class="text-sm text-gray-300">Remember me</span>
+                        </label>
+                        <a href="#" class="forgot-password text-sm text-neon-cyan hover:text-white transition-colors duration-300">
+                            Forgot password?
+                        </a>
+                    </div>
+
+                    <!-- Login Button -->
+                    <button type="submit" class="login-button">
+                        <span class="button-text">Login</span>
+                        <div class="button-glow"></div>
+                    </button>
+
+                    <!-- Back to Home Link -->
+                    <div class="text-center mt-6">
+                        <a href="index.html" class="back-link">
+                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                            </svg>
+                            Back to ExoAI Explorer
+                        </a>
+                    </div>
+                </form>
+
+                <!-- Success/Error Messages -->
+                <div id="messageContainer" class="message-container hidden">
+                    <div id="messageContent" class="message-content">
+                        <!-- Dynamic message content -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="login-footer">
+                <p class="text-gray-400 text-sm text-center">
+                    © 2024 ExoAI Explorer. Exploring the cosmos with AI.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="login.js"></script>
+</body>
+</html>
